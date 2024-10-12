@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dics3qlxp23vu"]
+[gd_scene load_steps=19 format=3 uid="uid://dics3qlxp23vu"]
 
 [ext_resource type="PackedScene" uid="uid://brinsgdpf0y7b" path="res://pid/game/zombie.tscn" id="1_sxkf2"]
 [ext_resource type="Script" path="res://pid/interacting_pid_dot.gd" id="2_0hr0k"]
@@ -6,6 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://llgdport1gjx" path="res://icon.svg" id="3_wg1dt"]
 [ext_resource type="Script" path="res://pid/game/mouse.gd" id="4_fs5pq"]
 [ext_resource type="Script" path="res://pid/game/zombie_spawner.gd" id="5_kuy08"]
+[ext_resource type="Script" path="res://pid/game/linear_projectile.gd" id="6_6kff3"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_mflnj"]
 
@@ -47,6 +48,13 @@ width = 5
 height = 5
 noise = SubResource("FastNoiseLite_s77ik")
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_15hhd"]
+radius = 20.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_35rot"]
+width = 15
+height = 15
+
 [node name="Pid" type="Node2D"]
 
 [node name="zombie" parent="." instance=ExtResource("1_sxkf2")]
@@ -69,6 +77,9 @@ text = "health"
 [node name="Sprite2D" type="Sprite2D" parent="Mouse"]
 scale = Vector2(0.3, 0.3)
 texture = ExtResource("3_wg1dt")
+
+[node name="Shoot" type="Timer" parent="Mouse"]
+autostart = true
 
 [node name="SmallProjectile" type="Area2D" parent="."]
 position = Vector2(354, 147)
@@ -108,5 +119,18 @@ material = SubResource("ShaderMaterial_ts2fk")
 scale = Vector2(1, 1)
 texture = SubResource("NoiseTexture2D_2t3ha")
 
+[node name="LinearProjectile" type="CharacterBody2D" parent="."]
+collision_layer = 2
+script = ExtResource("6_6kff3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LinearProjectile"]
+shape = SubResource("CircleShape2D_15hhd")
+
+[node name="Sprite2D" type="Sprite2D" parent="LinearProjectile"]
+scale = Vector2(0.5, 0.5)
+texture = SubResource("NoiseTexture2D_35rot")
+
 [node name="ZombieSpawner" type="Node" parent="."]
 script = ExtResource("5_kuy08")
+
+[connection signal="timeout" from="Mouse/Shoot" to="Mouse" method="_on_shoot_timeout"]
