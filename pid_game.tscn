@@ -1,0 +1,112 @@
+[gd_scene load_steps=16 format=3 uid="uid://dics3qlxp23vu"]
+
+[ext_resource type="PackedScene" uid="uid://brinsgdpf0y7b" path="res://pid/game/zombie.tscn" id="1_sxkf2"]
+[ext_resource type="Script" path="res://pid/interacting_pid_dot.gd" id="2_0hr0k"]
+[ext_resource type="Shader" path="res://pid/game/projectile.gdshader" id="2_n5l3p"]
+[ext_resource type="Texture2D" uid="uid://llgdport1gjx" path="res://icon.svg" id="3_wg1dt"]
+[ext_resource type="Script" path="res://pid/game/mouse.gd" id="4_fs5pq"]
+[ext_resource type="Script" path="res://pid/game/zombie_spawner.gd" id="5_kuy08"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_mflnj"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ts2ei"]
+size = Vector2(2, 2)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hpc7b"]
+shader = ExtResource("2_n5l3p")
+shader_parameter/velocity = Vector2(0, 0)
+shader_parameter/size = 0.5
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gcm1a"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_12edh"]
+width = 2
+height = 2
+noise = SubResource("FastNoiseLite_gcm1a")
+
+[sub_resource type="Shader" id="Shader_bhlli"]
+code = "shader_type canvas_item;
+
+uniform vec2 velocity;
+uniform float size = 0.5;
+
+void fragment() {
+	COLOR = vec4(vec3(1.), 1. - 2. * length(UV-0.5));
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ts2fk"]
+shader = SubResource("Shader_bhlli")
+shader_parameter/velocity = Vector2(0, 0)
+shader_parameter/size = 0.5
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_s77ik"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2t3ha"]
+width = 5
+height = 5
+noise = SubResource("FastNoiseLite_s77ik")
+
+[node name="Pid" type="Node2D"]
+
+[node name="zombie" parent="." instance=ExtResource("1_sxkf2")]
+
+[node name="Mouse" type="Area2D" parent="."]
+position = Vector2(109, 40)
+collision_layer = 4
+script = ExtResource("4_fs5pq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Mouse"]
+shape = SubResource("CircleShape2D_mflnj")
+
+[node name="Label" type="Label" parent="Mouse"]
+offset_left = -25.0
+offset_top = -41.0
+offset_right = 25.0
+offset_bottom = -18.0
+text = "health"
+
+[node name="Sprite2D" type="Sprite2D" parent="Mouse"]
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("3_wg1dt")
+
+[node name="SmallProjectile" type="Area2D" parent="."]
+position = Vector2(354, 147)
+scale = Vector2(10, 10)
+collision_layer = 2
+script = ExtResource("2_0hr0k")
+k = 0.05
+ti = 100.0
+damage = 5.0
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SmallProjectile"]
+scale = Vector2(1, 1)
+shape = SubResource("RectangleShape2D_ts2ei")
+
+[node name="Sprite2D" type="Sprite2D" parent="SmallProjectile"]
+material = SubResource("ShaderMaterial_hpc7b")
+scale = Vector2(1, 1)
+texture = SubResource("NoiseTexture2D_12edh")
+
+[node name="BigProjectile" type="Area2D" parent="."]
+position = Vector2(354, 147)
+scale = Vector2(10, 10)
+collision_layer = 2
+script = ExtResource("2_0hr0k")
+k = 0.2
+ti = 500.0
+damage = 1.0
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="BigProjectile"]
+scale = Vector2(1, 1)
+shape = SubResource("RectangleShape2D_ts2ei")
+
+[node name="Sprite2D" type="Sprite2D" parent="BigProjectile"]
+material = SubResource("ShaderMaterial_ts2fk")
+scale = Vector2(1, 1)
+texture = SubResource("NoiseTexture2D_2t3ha")
+
+[node name="ZombieSpawner" type="Node" parent="."]
+script = ExtResource("5_kuy08")

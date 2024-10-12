@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://wp2ofuky25vs"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ts2ei"]
+size = Vector2(10, 10)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_gcm1a"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_65ao3"]
+width = 10
+height = 10
+noise = SubResource("FastNoiseLite_gcm1a")
+
+[node name="AttractingDot" type="Area2D"]
+position = Vector2(91, 51)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_ts2ei")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = SubResource("NoiseTexture2D_65ao3")
